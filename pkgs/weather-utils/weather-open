@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# weather-open — open full wttr.in 3-day forecast inside a temporary foot terminal.
+# The terminal closes automatically when the user presses any key.
+exec foot sh -c 'curl -s --connect-timeout 10 "wttr.in" && echo && echo "Press Enter to close..." && read'

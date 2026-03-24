@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# qndl-audio — queue an audio-only yt-dlp download via task-spooler.
+#
+# Thin wrapper around qndl that pre-sets the yt-dlp audio command.
+# Passes the URL straight to qndl with the audio extraction command.
+#
+# Usage: qndl-audio <url>
+
+[ -z "$1" ] && { echo "Usage: qndl-audio <url>" >&2; exit 1; }
+exec qndl "$1" 'yt-dlp -o "%(title)s.%(ext)s" -f bestaudio --embed-metadata --restrict-filenames'

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# newsboat-open — open Newsboat inside a foot terminal.
+#
+# Used as the leftClickExec for the Noctalia bar newsboat widget.
+# foot closes automatically when newsboat exits because newsboat is the
+# foreground process foot was started with.
+
+exec foot newsboat

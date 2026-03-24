@@ -1,0 +1,37 @@
+# Nix build results
+result
+result-*
+
+# Editor / IDE artefacts
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Secrets — never commit plain-text secrets
+*.age
+*.pem
+secrets.yaml
+
+# LaTeX auxiliary files produced during compilation
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.bbl
+*.blg
+# Compiled PDFs inside guides/test/ are not useful to commit
+guides/test/*.pdf
+
+# Neovim / Lua
+# lazy-lock.json lives in ~/.local/share/nvim/ (stdpath("data")), not here
+# Nothing nvim-specific needs to be ignored in this repo

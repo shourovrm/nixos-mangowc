@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# link-handler — smart URL / file dispatcher for Wayland
+#
+# Feed it a URL or file path; it opens the resource in the right program:
+#   - Video / YouTube / streaming sites → mpv
+#   - Images (png/jpg/gif/webp)         → mpv (can display images)
+#   - PDF / comic archives              → zathura
+#   - Audio files                       → queued download via qndl
+#   - Plain files on disk               → neovim inside foot
+#   - Anything else                     → firefox
+#
+# If called with no argument, reads the URL from the Wayland clipboard.
+# This is the Wayland replacement for the X11 linkhandler script.
+#
+# Runtime deps: mpv, zathura, foot, firefox, curl, wl-clipboard, qndl
+
+# ── Input ─────────────────────────────────────────────────────────────────────
+if [ -z "$1" ]; then
+  url="$(wl-paste 2>/dev/null)"
+else
+  url="$1"
+fi
+
+[ -z "$url" ] && exit 0
+
+# Derive a clean filename for /tmp downloads
+_tmp_name() { echo "/tmp/$(echo "$url" | sed 's/.*\///;s/%20/ /g')"; }
+
+# ── Dispatch ─────────────────────────────────────────────────────────────────
+case "$url" in
+  # Video: stream directly with mpv
+  *mkv|*webm|*mp4|\
+  *youtube.com/watch*|*youtube.com/playlist*|*youtube.com/shorts*|\
+  *youtu.be*|*hooktube.com*|*bitchute.com*|*odysee.com*)
+    setsid -f mpv --quiet "$url" >/dev/null 2>&1 ;;
+
+  # Images: mpv can display still images (Wayland-native, no nsxiv needed)
+  *png|*jpg|*jpe|*jpeg|*gif|*webp)
+    setsid -f mpv --quiet "$url" >/dev/null 2>&1 ;;
+
+  # PDF / comic archives: download to /tmp then open in Zathura
+  *pdf|*cbz|*cbr)
+    curl -sL "$url" > "$(_tmp_name)" \
+      && zathura "$(_tmp_name)" >/dev/null 2>&1 & ;;
+
+  # Audio: queue a download with qndl (task-spooler + curl)
+  *mp3|*flac|*opus|*mp3\?source*)
+    qndl "$url" 'curl -LO' >/dev/null 2>&1 ;;
+
+  # Anything else: local file → Neovim in foot; remote → Firefox
+  *)
+    if [ -f "$url" ]; then
+      # Local file: open in Neovim; foot closes when Neovim exits
+      foot nvim "$url" >/dev/null 2>&1
+    else
+      setsid -f firefox "$url" >/dev/null 2>&1
+    fi ;;
+esac

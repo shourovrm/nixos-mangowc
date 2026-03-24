@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# fuzzel-handler — Wayland-native URL/file handler menu
+#
+# Pass a URL or file path as $1, or it reads from the Wayland clipboard.
+# Presents a fuzzel --dmenu menu; the selected action dispatches the link.
+# This is the Wayland equivalent of the classic dmenuhandler script.
+#
+# Runtime deps: fuzzel, wl-clipboard (wl-copy/wl-paste), mpv, zathura,
+#               foot, curl, yt-dlp, qndl, firefox, notify-send
+
+# ── Input ─────────────────────────────────────────────────────────────────────
+feed="${1:-$(wl-paste 2>/dev/null)}"
+[ -z "$feed" ] && { notify-send "fuzzel-handler" "No URL in clipboard"; exit 1; }
+
+# ── Noctalia-styled fuzzel colours (matches Monochrome scheme) ────────────────
+FUZZEL_OPTS=(
+  --dmenu
+  --prompt="Open with: "
+  --background-color=1a1a2eff
+  --text-color=e2e2e2ff
+  --selection-color=404060ff
+  --selection-text-color=ffffffff
+  --border-color=7f7fbfff
+  --border-width=2
+  --border-radius=8
+  --font="Monospace:size=11"
+  --width=40
+  --lines=12
+)
+
+# ── Menu ──────────────────────────────────────────────────────────────────────
+choice=$(printf '%s\n' \
+  "Copy URL to clipboard" \
+  "Open in browser (Firefox)" \
+  "Play in mpv" \
+  "Play in mpv (loop)" \
+  "Play in mpv (float window)" \
+  "Queue yt-dlp download" \
+  "Queue yt-dlp audio only" \
+  "Queue curl download" \
+  "Open PDF in Zathura" \
+  "Open in Neovim" \
+  | fuzzel "${FUZZEL_OPTS[@]}")
+
+[ -z "$choice" ] && exit 0   # user cancelled
+
+# ── Dispatch ─────────────────────────────────────────────────────────────────
+_tmp() { echo "/tmp/$(echo "$feed" | sed 's|.*/||;s/%20/ /g')"; }
+
+case "$choice" in
+  "Copy URL to clipboard")
+    # wl-copy accepts the URL directly as an argument
+    printf '%s' "$feed" | wl-copy ;;
+
+  "Open in browser (Firefox)")
+    setsid -f firefox "$feed" >/dev/null 2>&1 ;;
+
+  "Play in mpv")
+    setsid -f mpv --quiet "$feed" >/dev/null 2>&1 ;;
+
+  "Play in mpv (loop)")
+    setsid -f mpv --quiet --loop "$feed" >/dev/null 2>&1 ;;
+
+  "Play in mpv (float window)")
+    # Open a small floating mpv window in a dedicated foot terminal
+    setsid -f foot sh -c "mpv --geometry=+0-0 --autofit=30% --title=mpvfloat \"$feed\"" \
+      >/dev/null 2>&1 ;;
+
+  "Queue yt-dlp download")
+    qndl "$feed" >/dev/null 2>&1 ;;
+
+  "Queue yt-dlp audio only")
+    qndl "$feed" 'yt-dlp -o "%(title)s.%(ext)s" -f bestaudio --embed-metadata --restrict-filenames' ;;
+
+  "Queue curl download")
+    qndl "$feed" 'curl -LO' >/dev/null 2>&1 ;;
+
+  "Open PDF in Zathura")
+    curl -sL "$feed" > "$(_tmp)" \
+      && zathura "$(_tmp)" >/dev/null 2>&1 ;;
+
+  "Open in Neovim")
+    # Download remote file to /tmp then open in Neovim inside foot
+    if [ -f "$feed" ]; then
+      foot nvim "$feed" >/dev/null 2>&1
+    else
+      curl -sL "$feed" > "$(_tmp)" && foot nvim "$(_tmp)" >/dev/null 2>&1
+    fi ;;
+esac

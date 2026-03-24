@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# weather-bar — print a weather-aware temperature string for the Noctalia bar.
+# Uses wttr.in with IP-based location detection (no API key required).
+# Output: "🌦 +26°C"  or  "N/A" on failure.
+#
+# Fix: %c and %t must be sent literally to wttr.in; curl --data-urlencode ensures
+# the percent signs are properly URL-encoded (%25c, %25t) so the server receives
+# the format codes intact rather than garbage from URL-decoding %c / %t early.
+
+temp=$(curl -sG --connect-timeout 5 --max-time 10 \
+  --data-urlencode "format=%c %t" \
+  "https://wttr.in/" 2>/dev/null) || true
+
+if [[ -n "$temp" && "$temp" != *Unknown* && "$temp" != *error* ]]; then
+  echo "$temp"
+else
+  echo "N/A"
+fi

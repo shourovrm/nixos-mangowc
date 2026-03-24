@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# qndl — queue-and-download via task-spooler (tsp)
+#
+# $1  URL to download
+# $2  (optional) download command; defaults to yt-dlp with metadata embedding
+#
+# Queues the download using tsp (task-spooler) so it doesn't block the
+# current session.  Sends a desktop notification when queued and when done.
+#
+# Runtime deps: task-spooler (tsp), yt-dlp, curl, notify-send (libnotify)
+#
+# Examples:
+#   qndl "https://www.youtube.com/watch?v=…"
+#   qndl "https://example.com/file.mp3" "curl -LO"
+
+[ -z "$1" ] && { echo "Usage: qndl <url> [command]" >&2; exit 1; }
+
+url="$1"
+base="$(basename "$url")"
+
+# Send a queuing notification
+notify-send "⏳ Queuing…" "$base"
+
+# Use the provided command or fall back to yt-dlp with sensible defaults
+cmd="${2:-yt-dlp --embed-metadata -ic}"
+
+# Queue the download; tsp returns the job ID on stdout
+idnum="$(tsp $cmd "$url")"
+
+# Clean up the filename (remove query strings and URL-encoded spaces)
+realname="$(echo "$base" | sed 's/?\(source\|dest\).*//;s/%20/ /g')"
+
+# After download finishes: rename the file and notify
+tsp -D "$idnum" sh -c "mv \"$base\" \"$realname\" 2>/dev/null; notify-send '👍 Done' \"$realname\""

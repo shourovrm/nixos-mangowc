@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# nvim-open — open a file in Neovim inside a foot terminal window.
+#
+# foot is the parent process; the shell wrapper execs Neovim so when Neovim
+# exits (e.g. :q), foot exits too and the terminal window closes automatically.
+#
+# Usage: nvim-open [file ...]
+# Example: nvim-open ~/.config/newsboat/config
+
+exec foot -a nvim -T "Neovim" sh -c 'exec nvim "$@"' nvim "$@"
