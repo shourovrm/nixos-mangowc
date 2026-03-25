@@ -19,7 +19,8 @@ Log in through **greetd + tuigreet** and choose the **niri** session.
 | Action | Keys |
 | --- | --- |
 | Open terminal (foot) | `Super + T` |
-| Toggle Noctalia launcher | `Super + D` |
+| Open Raffi launcher (fuzzel UI) | `Super + D` |
+| Toggle Noctalia launcher | `Super + Shift + D` |
 | Lock screen | `Super + Ctrl + L` |
 
 ---
@@ -71,6 +72,7 @@ Screenshots are saved to `~/Pictures/Screenshots/` by niri's built-in screenshot
 | Toggle overview | `Super + O` |
 
 ### Bar widgets (right side)
+
 - **SessionMenu** — shutdown, reboot, logout, screen off
 - **SystemMonitor** — CPU, RAM, network speed, disk usage
 - **Volume** — click to open audio panel
@@ -78,6 +80,7 @@ Screenshots are saved to `~/Pictures/Screenshots/` by niri's built-in screenshot
 - **Clock**
 
 ### Bar widgets (left side)
+
 - **ControlCenter** (distro logo) — opens control centre
 - **Network** — connection status
 - **Bluetooth** — toggle and device list
@@ -89,6 +92,15 @@ Screenshots are saved to `~/Pictures/Screenshots/` by niri's built-in screenshot
 | Action | Keys |
 | --- | --- |
 | Quit niri | `Super + Shift + E` |
+
+---
+
+## Launcher
+
+`Super + D` opens Raffi using Fuzzel as the UI backend.
+The config lives at `~/.config/raffi/raffi.yaml`, and Fuzzel styling lives at `~/.config/fuzzel/fuzzel.ini`.
+
+The seeded entries include Firefox, foot, Thunar, VS Code, Newsboat, weather, lock screen, and a `Google Drive` shortcut pointing to `~/GoogleDrive`.
 
 ---
 
@@ -116,7 +128,7 @@ Most apps using `libsecret` work automatically. Chromium-based and Electron apps
 | Chromium / Chrome | `~/.config/chromium-flags.conf` written by Home Manager in `niri.nix` |
 | Other Electron apps | Add a `.config/<appname>-flags.conf` with the two lines below |
 
-```
+```text
 --ozone-platform=wayland
 --password-store=gnome-libsecret
 ```

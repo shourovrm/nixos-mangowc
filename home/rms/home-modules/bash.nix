@@ -9,8 +9,8 @@
     shellAliases = {
       ll        = "eza -lah";          # coloured long-listing with human sizes
       cat       = "bat";               # bat replaces cat with syntax highlighting
-      nixswitch = "sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop"; # apply config
-      nixup     = "nix flake update ~/nixos-config && nixswitch";               # update + apply
+      nixswitch = "sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop"; # apply config
+      nixup     = "nix flake update ~/nixos-config-v2 && nixswitch";               # update + apply
     };
 
     bashrcExtra = ''

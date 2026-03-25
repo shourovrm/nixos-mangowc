@@ -8,8 +8,8 @@ Day-to-day and maintenance commands for this flake-based NixOS configuration.
 
 | Task | Command |
 | --- | --- |
-| Rebuild & switch | `sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop` |
-| Test without switching | `sudo nixos-rebuild test --flake ~/nixos-config#rms-laptop` |
+| Rebuild & switch | `sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop` |
+| Test without switching | `sudo nixos-rebuild test --flake ~/nixos-config-v2#rms-laptop` |
 | Roll back | `sudo nixos-rebuild switch --rollback` |
 | Garbage collect | `sudo nix-collect-garbage -d` |
 
@@ -23,16 +23,16 @@ Aliases in `.bashrc`:
 
 ```bash
 # 1. Pull latest revisions for all inputs
-nix flake update ~/nixos-config
+nix flake update ~/nixos-config-v2
 
 # 2. Test the build before activating
-sudo nixos-rebuild test --flake ~/nixos-config#rms-laptop
+sudo nixos-rebuild test --flake ~/nixos-config-v2#rms-laptop
 
 # 3. Switch if it looks good
-sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop
+sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
 
 # 4. Commit the updated lock file
-cd ~/nixos-config
+cd ~/nixos-config-v2
 git add flake.lock
 git commit -m "chore: flake update $(date '+%Y-%m-%d')"
 
@@ -53,7 +53,7 @@ nix flake update nixpkgs
 | --- | --- |
 | Bootloader, kernel, filesystems | `hosts/rms-laptop/hardware-configuration.nix` |
 | Machine identity, user account | `hosts/rms-laptop/configuration.nix` |
-| Locale, desktop, audio, Nix GC | `modules/nixos/*.nix` |
+| Locale, greetd, storage, audio, Nix GC | `modules/nixos/*.nix` |
 | User apps, shell, git, editors | `home/rms/home-modules/*.nix` |
 
 ---

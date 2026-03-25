@@ -6,10 +6,11 @@ A flake-based NixOS + Home Manager configuration for testing on a new machine.
 - **Login manager**: greetd + tuigreet (replaces GDM + GNOME)
 - **Compositor**: Niri
 - **No GNOME** — GTK theming via `gtk.nix` + dconf
+- **Launcher**: Raffi on top of Fuzzel (`Super+D`)
 - **NTFS/FAT/exFAT** support with udisks2 + udiskie automount
 - **Clipboard history** via cliphist (`Super+V` to pick from history)
 - **File manager**: Thunar with volume management plugins
-- **Cloud sync**: rclone (run `rclone config` to add Google Drive)
+- **Cloud sync**: rclone with `gdrive` remote convention for Google Drive
 - **Password manager**: KeePassXC (can act as secret service provider)
 - **Keyring**: gnome-keyring unlocked via greetd PAM
 
@@ -80,6 +81,7 @@ Detailed documentation lives in the [`guides/`](guides/) folder:
 | [neovim.md](guides/neovim.md) | Neovim plugins, LSP, clipboard, keybindings |
 | [newsboat.md](guides/newsboat.md) | Newsboat RSS reader, link macros, download queue |
 | [latex.md](guides/latex.md) | LaTeX with MiKTeX + VSCode LaTeX Workshop |
+| [rclone.md](guides/rclone.md) | Google Drive setup and mounting with rclone |
 | [distrobox.md](guides/distrobox.md) | Running other distros with Distrobox + Podman |
 
 ## Layout
@@ -146,14 +148,14 @@ If NixOS is already installed and you just want to apply this config:
 export NIX_CONFIG="experimental-features = nix-command flakes"
 
 # Clone the repo
-git clone https://github.com/shourovrm/nixos-config.git ~/nixos-config
+git clone https://github.com/shourovrm/nixos-config.git ~/nixos-config-v2
 
 # Copy your machine's hardware config into the repo
 sudo cp /etc/nixos/hardware-configuration.nix \
-        ~/nixos-config/hosts/rms-laptop/hardware-configuration.nix
+    ~/nixos-config-v2/hosts/rms-laptop/hardware-configuration.nix
 
 # Apply
-sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop
+sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
 ```
 
 ## Quick commands
@@ -162,7 +164,7 @@ sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop
 | --- | --- |
 | Rebuild & switch | `nixswitch` |
 | Update flake + switch | `nixup` |
-| Test without switching | `sudo nixos-rebuild test --flake ~/nixos-config#rms-laptop` |
+| Test without switching | `sudo nixos-rebuild test --flake ~/nixos-config-v2#rms-laptop` |
 | Roll back | `sudo nixos-rebuild switch --rollback` |
 | Garbage collect | `sudo nix-collect-garbage -d` |
 

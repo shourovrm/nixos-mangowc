@@ -19,7 +19,7 @@ Full Overleaf-equivalent workflow using **MiKTeX** + **VSCode LaTeX Workshop** â
 ### 1 â€” Apply the NixOS config
 
 ```bash
-sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop
+sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
 ```
 
 This installs `miktex`, `perl`, and the LaTeX Workshop VSCode extension automatically.

@@ -89,17 +89,38 @@ DISK=/dev/nvme0n1
 ### Partition
 
 ```bash
-parted $DISK -- mklabel gpt
-parted $DISK -- mkpart ESP fat32 1MiB 512MiB
-parted $DISK -- set 1 esp on
-parted $DISK -- mkpart primary ext4 512MiB 100%
+cfdisk $DISK
+```
+
+Inside `cfdisk`:
+
+- choose `gpt` if asked
+- create a `512 MiB` `EFI System` partition
+- create a `Linux swap` partition only if you want swap
+- create a `Linux filesystem` partition with the remaining space for `/`
+
+After writing the partition table, identify the resulting partition names:
+
+```bash
+lsblk -o NAME,SIZE,TYPE,FSTYPE,PARTTYPENAME,MOUNTPOINT $DISK
 ```
 
 ### Format
 
 ```bash
-mkfs.fat -F 32 -n EFI ${DISK}p1
-mkfs.ext4 -L nixos ${DISK}p2
+EFIPART=/dev/nvme0n1p1
+ROOTPART=/dev/nvme0n1p2
+SWAPPART=/dev/nvme0n1p3   # optional; omit if you did not create one
+
+mkfs.fat -F 32 -n EFI $EFIPART
+mkfs.ext4 -L nixos $ROOTPART
+```
+
+If you created a swap partition:
+
+```bash
+mkswap -L swap $SWAPPART
+swapon $SWAPPART
 ```
 
 ### Mount
@@ -108,29 +129,6 @@ mkfs.ext4 -L nixos ${DISK}p2
 mount /dev/disk/by-label/nixos /mnt
 mkdir -p /mnt/boot/efi
 mount /dev/disk/by-label/EFI /mnt/boot/efi
-```
-
-### Optional: create a swapfile
-
-Use this if you want swap without a dedicated swap partition.
-
-```bash
-fallocate -l 8G /mnt/swapfile
-chmod 600 /mnt/swapfile
-mkswap /mnt/swapfile
-swapon /mnt/swapfile
-```
-
-Add the matching entry after `nixos-generate-config` in
-`hosts/rms-laptop/hardware-configuration.nix`:
-
-```nix
-swapDevices = [
-   {
-      device = "/swapfile";
-      size = 8192;
-   }
-];
 ```
 
 ---
@@ -153,37 +151,41 @@ From Windows:
 
 ```bash
 DISK=/dev/nvme0n1
-parted $DISK unit MiB print free
-parted $DISK -- mkpart primary ext4 STARTMiB ENDMiB
+lsblk -o NAME,SIZE,TYPE,FSTYPE,PARTTYPENAME,MOUNTPOINT
+swapon --show
+cfdisk $DISK
 ```
+
+Before writing changes, check whether you already have a Linux swap partition
+you want to reuse. A Windows pagefile is not Linux swap.
+
+Inside `cfdisk`, use only the free space created from Windows:
+
+- create one `Linux filesystem` partition for NixOS root
+- create one `Linux swap` partition only if you do not already have Linux swap to reuse
+- leave the existing Windows EFI partition intact
 
 ### Format and mount
 
 ```bash
+EFIPART=/dev/nvme0n1p1    # existing Windows EFI partition
 ROOTPART=/dev/nvme0n1p5   # example, verify with lsblk
+SWAPPART=/dev/nvme0n1p6   # optional; only if created or reused
 
 mkfs.ext4 -L nixos $ROOTPART
 mount /dev/disk/by-label/nixos /mnt
 
 mkdir -p /mnt/boot/efi
-mount /dev/nvme0n1p1 /mnt/boot/efi   # existing Windows EFI partition
+mount $EFIPART /mnt/boot/efi
 ```
 
 Do **not** reformat the Windows EFI partition.
 
-### Optional: create a swapfile
-
-After mounting `/mnt`, create swap in the new NixOS root:
+If you have a Linux swap partition to use:
 
 ```bash
-fallocate -l 8G /mnt/swapfile
-chmod 600 /mnt/swapfile
-mkswap /mnt/swapfile
-swapon /mnt/swapfile
+swapon $SWAPPART
 ```
-
-Then add the same `swapDevices` entry shown above to
-`hosts/rms-laptop/hardware-configuration.nix` after generating the hardware config.
 
 ---
 
@@ -244,10 +246,23 @@ Make sure:
 
 - hostname is correct
 - EFI mount path is `/boot/efi`
-- GRUB config matches your system
+- GRUB config matches your system and keeps kernels/initrd on the root filesystem
 - user is `rms`
 
+These bootloader settings should be present:
+
+```nix
+boot.loader.efi.efiSysMountPoint = "/boot/efi";
+boot.loader.grub.efiSupport = true;
+boot.loader.grub.device = "nodev";
+```
+
 For dual-boot, `boot.loader.grub.useOSProber = true;` should stay enabled.
+
+If you are using a swap partition, check `hosts/rms-laptop/hardware-configuration.nix`
+after copying it into the repo and confirm `swapDevices` points to the correct
+swap partition. `nixos-generate-config` usually detects any swap partition that
+is active via `swapon`.
 
 ---
 
@@ -259,13 +274,21 @@ nixos-install --flake /mnt/home/rms/nixos-config-v2#rms-laptop --root /mnt
 
 Set the root password when prompted.
 
-Then set the user password:
+Then set the user password, update the flake, and rebuild once from inside the
+target system before rebooting:
 
 ```bash
 nixos-enter --root /mnt
 passwd rms
+
+cd /home/rms/nixos-config-v2
+export NIX_CONFIG="experimental-features = nix-command flakes"
+nix flake update
+nixos-rebuild switch --flake .#rms-laptop
 exit
 ```
+
+Only continue to reboot if that rebuild succeeds.
 
 ---
 
@@ -288,14 +311,16 @@ Available sessions:
 
 - `niri`
 
-Choose the session, log in as `rms`, and then run:
+Choose the session and log in as `rms`.
+
+If the rebuild inside `nixos-enter` succeeded, no extra command is required on
+first login.
+
+For later config changes, use:
 
 ```bash
-cd ~/nixos-config-v2
-nix run home-manager/master -- switch --flake .#rms
+nixswitch
 ```
-
-This ensures the user-level config is fully applied.
 
 ---
 
@@ -320,6 +345,12 @@ The seeded default is:
 
 `Super+V` opens the cliphist picker in Niri.
 
+### Launcher
+
+`Super+D` opens Raffi with Fuzzel as the launcher UI.
+
+`Super+Shift+D` still opens Noctalia's own launcher.
+
 ### Storage and file managers
 
 You should have:
@@ -328,8 +359,22 @@ You should have:
 - `udiskie`
 - `gvfs`
 - `Thunar`
-- `Nautilus`
+- `rclone`
 - NTFS/exFAT support
+
+### Google Drive
+
+`rclone` is installed already. Use a remote named `gdrive` so the included
+launcher entry and docs line up:
+
+```bash
+rclone config
+mkdir -p ~/GoogleDrive
+rclone lsd gdrive:
+rclone mount gdrive: ~/GoogleDrive --daemon
+```
+
+If you pick a different remote name, update `~/.config/raffi/raffi.yaml`.
 
 ### Keyring and auth
 
@@ -353,7 +398,6 @@ It auto-activates in new shells.
 cd ~/nixos-config-v2
 
 sudo nixos-rebuild switch --flake .#rms-laptop
-home-manager switch --flake .#rms
 nix flake check --no-build
 ```
 
