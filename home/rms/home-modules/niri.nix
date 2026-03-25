@@ -6,6 +6,7 @@
 {
   home.packages = with pkgs; [
     fuzzel          # app launcher
+    raffi           # YAML-driven launcher on top of fuzzel
     foot            # Wayland-native terminal
     swaylock        # screen locker
     swayidle        # idle management
@@ -70,6 +71,100 @@
   home.file.".config/chromium-flags.conf".text = ''
     --ozone-platform=wayland
     --password-store=gnome-libsecret
+  '';
+
+  # Fuzzel is the frontend and Raffi provides the launcher entries / actions.
+  xdg.configFile."fuzzel/fuzzel.ini".text = ''
+    dpi-aware=yes
+    font=JetBrains Mono:size=10
+    terminal=foot
+    width=40
+    layer=overlay
+    exit-on-keyboard-focus-loss=no
+    inner-pad=12
+    fields=filename,name,comment
+
+    [colors]
+    background=1e1e2eff
+    text=cdd6f4ff
+    match=89b4faff
+    selection=45475aff
+    selection-text=cdd6f4ff
+    selection-match=89dcebff
+    border=7fc8ffff
+  '';
+
+  xdg.configFile."raffi/raffi.yaml".text = ''
+    version: 1
+
+    general:
+      ui_type: fuzzel
+      max_history: 20
+
+    launchers:
+      browser:
+        binary: firefox
+        description: "Firefox"
+        icon: firefox
+
+      terminal:
+        binary: foot
+        description: "Foot terminal"
+        icon: utilities-terminal
+
+      files:
+        binary: thunar
+        description: "Thunar file manager"
+        icon: org.xfce.thunar
+
+      downloads:
+        binary: thunar
+        args: ["~/Downloads"]
+        description: "Downloads"
+        icon: folder-download
+
+      editor:
+        binary: code
+        description: "VS Code"
+        icon: vscode
+
+      newsboat:
+        binary: foot
+        args: ["newsboat"]
+        description: "Newsboat"
+        icon: applications-internet
+
+      weather:
+        binary: weather-open
+        description: "Weather forecast"
+        icon: weather-overcast
+
+      google_drive:
+        binary: thunar
+        args: ["~/GoogleDrive"]
+        description: "Google Drive"
+        icon: folder-remote
+
+      lock:
+        binary: swaylock
+        args: ["-f"]
+        description: "Lock screen"
+        icon: system-lock-screen
+
+    addons:
+      web_searches:
+        - name: "Google"
+          keyword: "g"
+          url: "https://www.google.com/search?q={query}"
+          icon: google
+        - name: "GitHub"
+          keyword: "gh"
+          url: "https://github.com/search?q={query}"
+          icon: github
+        - name: "Nix Packages"
+          keyword: "np"
+          url: "https://search.nixos.org/packages?channel=unstable&query={query}"
+          icon: nix-snowflake
   '';
 
   # Polkit authentication agent for privilege dialogs inside niri
@@ -205,8 +300,9 @@
       Mod+Shift+E { quit; }
       Mod+O       { toggle-overview; }
 
-      // Noctalia IPC
-      Mod+D     { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }  // open Noctalia launcher
+      // Launchers
+      Mod+D       { spawn "raffi"; }  // default launcher: fuzzel frontend with Raffi entries
+      Mod+Shift+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
       Mod+N     { spawn "noctalia-shell" "ipc" "call" "notifications" "togglePanel"; }
       Mod+B     { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
 

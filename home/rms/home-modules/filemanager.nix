@@ -1,16 +1,22 @@
 # home/rms/home-modules/filemanager.nix  (nixos-config-v2)
-# File managers, cloud sync, and removable-media automount.
-#   Nautilus  — GNOME file manager (native Wayland, thumbnails, GVFS)
+# File management, cloud sync, and removable-media automount.
 #   Thunar    — XFCE file manager (registered via programs.thunar in NixOS module)
-#   rclone    — Google Drive / cloud sync (CLI; configure with `rclone config`)
+#   rclone    — Google Drive / cloud sync (CLI; create a `gdrive` remote)
 #   udiskie   — automount daemon for removable drives (tray icon + notifications)
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   home.packages = with pkgs; [
     rclone            # Cloud storage CLI (Google Drive, S3, Dropbox, etc.)
     keepassxc         # Password manager with optional secret-service provider
   ];
+
+  # ── Google Drive mountpoint ───────────────────────────────────────────────
+  # Keep a stable mountpoint ready for the `gdrive:` rclone remote used in the
+  # launcher config and install guide.
+  home.activation.createGoogleDriveMountpoint = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "${config.home.homeDirectory}/GoogleDrive"
+  '';
 
   # ── udiskie: automount removable storage ──────────────────────────────────
   # Connects to udisks2 (enabled in filesystems.nix) and auto-mounts USB
@@ -33,7 +39,6 @@
   };
 
   # ── rclone: initial setup reminder ────────────────────────────────────────
-  # Run `rclone config` to add Google Drive or other remotes.
-  # Mount example: rclone mount gdrive: ~/GoogleDrive --daemon
-  # Systemd user service for auto-mounting can be added here later.
+  # Create a remote named `gdrive` so the install guide and Raffi launcher can
+  # refer to a single stable Google Drive mountpoint at ~/GoogleDrive.
 }
