@@ -1,7 +1,7 @@
 # pkgs/fuzzel-handler/default.nix
 # Builds the fuzzel-handler script: a Wayland-native URL/file handler menu
 # powered by fuzzel instead of dmenu.  All X11 tools (xclip, nsxiv, xwallpaper)
-# are replaced with Wayland equivalents (wl-copy, mpv, swaybg).
+# are replaced with Wayland equivalents (wl-copy, mpv, native portals).
 { pkgs }:
 pkgs.stdenv.mkDerivation {
   name = "fuzzel-handler";

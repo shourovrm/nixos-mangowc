@@ -1,6 +1,6 @@
 # modules/nixos/niri.nix  (nixos-config-v2)
-# Registers niri as an available Wayland session.
-# GNOME is NOT present in v2 — portals use wlr + gtk backends.
+# Registers niri as the Wayland session and configures portals for a
+# greetd-managed, non-GNOME desktop.
 { pkgs, ... }:
 
 {
@@ -10,17 +10,19 @@
   # Polkit — already enabled by greetd.nix but safe to declare twice
   security.polkit.enable = true;
 
-  # XDG portals — wlr handles screen capture in all wlroots sessions;
-  # gtk provides file pickers and other GTK-based portals.
+  # XDG portals — niri's screencast support integrates with the GNOME portal,
+  # while gtk provides a lightweight file chooser for Thunar-centric setups.
   xdg.portal = {
-    enable       = true;
+    enable = true;
     extraPortals = [
-      pkgs.xdg-desktop-portal-wlr   # screen sharing / capture (wlroots)
-      pkgs.xdg-desktop-portal-gtk   # file picker, settings, screenshots
+      pkgs.xdg-desktop-portal-gnome  # screen sharing / screencast for niri
+      pkgs.xdg-desktop-portal-gtk    # lightweight file chooser, settings
     ];
     config = {
-      niri  = { default = [ "wlr" "gtk" ]; };
-      mango = { default = [ "wlr" "gtk" ]; };
+      niri = {
+        default = [ "gnome" "gtk" ];
+        "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+      };
       # Fallback for unknown sessions
       common = { default = [ "gtk" ]; };
     };

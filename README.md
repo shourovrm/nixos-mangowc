@@ -4,11 +4,11 @@ A flake-based NixOS + Home Manager configuration for testing on a new machine.
 
 **Key differences from v1:**
 - **Login manager**: greetd + tuigreet (replaces GDM + GNOME)
-- **Compositors**: Niri + MangoWC (same as v1)
+- **Compositor**: Niri
 - **No GNOME** — GTK theming via `gtk.nix` + dconf
 - **NTFS/FAT/exFAT** support with udisks2 + udiskie automount
 - **Clipboard history** via cliphist (`Super+V` to pick from history)
-- **File managers**: Nautilus + Thunar with volume management plugins
+- **File manager**: Thunar with volume management plugins
 - **Cloud sync**: rclone (run `rclone config` to add Google Drive)
 - **Password manager**: KeePassXC (can act as secret service provider)
 - **Keyring**: gnome-keyring unlocked via greetd PAM
@@ -31,7 +31,6 @@ sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
 | Session | Binary | Config |
 | --- | --- | --- |
 | Niri | `niri` | `~/.config/niri/config.kdl` |
-| MangoWC (mango) | `mango` | `~/.config/mango/config.conf` |
 
 ## Layout
 
@@ -42,12 +41,11 @@ nixos-config-v2/
 ├── modules/nixos/
 │   ├── greetd.nix             # login manager (greetd + tuigreet + PAM keyring)
 │   ├── filesystems.nix        # NTFS/FAT/exFAT, udisks2, gvfs, dconf, Thunar
-│   ├── niri.nix               # Niri session (wlr+gtk portals, no GNOME)
-│   └── mangowc.nix            # MangoWC / mango session
+│   └── niri.nix               # Niri session (GNOME+GTK portals, no GNOME desktop)
 └── home/rms/home-modules/
     ├── gtk.nix                # GTK theming (adw-gtk3-dark + dconf)
     ├── clipboard.nix          # cliphist + systemd watcher service
-    └── filemanager.nix        # Nautilus, Thunar, rclone, KeePassXC, udiskie
+    └── filemanager.nix        # Thunar default, rclone, KeePassXC, udiskie
 ```
 
 ## Quick commands
@@ -83,7 +81,6 @@ Detailed documentation lives in the [`guides/`](guides/) folder:
 | [newsboat.md](guides/newsboat.md) | Newsboat RSS reader, link macros, download queue |
 | [latex.md](guides/latex.md) | LaTeX with MiKTeX + VSCode LaTeX Workshop |
 | [distrobox.md](guides/distrobox.md) | Running other distros with Distrobox + Podman |
-| [mangowc.md](guides/mangowc.md) | MangoWC (mango) Wayland compositor — keybindings, layouts, config |
 
 ## Layout
 
@@ -101,7 +98,7 @@ nixos-config/
 │   ├── newsboat.md
 │   ├── latex.md
 │   ├── distrobox.md
-│   └── mangowc.md
+│   └── flake.md
 ├── pkgs/                                  # Custom Nix packages (callPackage)
 │   ├── fuzzel-handler/                    # fuzzel --dmenu URL/file handler
 │   ├── link-handler/                      # Smart URL dispatcher
@@ -115,10 +112,11 @@ nixos-config/
 ├── modules/
 │   └── nixos/                             # Shared system-level modules
 │       ├── locale.nix
-│       ├── desktop.nix                    # GNOME + GDM + printing
+│       ├── greetd.nix                     # greetd + tuigreet + PAM keyring
 │       ├── audio.nix                      # PipeWire
 │       ├── nix-settings.nix               # Flakes, GC, generation limit
 │       ├── niri.nix                       # Niri Wayland session entry
+│       ├── filesystems.nix                # Thunar, gvfs, udisks2, dconf
 │       └── noctalia-system.nix            # Bluetooth, upower, power-profiles
 └── home/
     └── rms/
@@ -132,6 +130,8 @@ nixos-config/
             ├── newsboat.nix               # Newsboat RSS reader
             ├── scripts.nix                # Wires pkgs/ custom scripts
             ├── niri.nix                   # KDL config, session tools, power
+            ├── gtk.nix                    # GTK theme + env overrides
+            ├── filemanager.nix            # Thunar default, rclone, KeePassXC
             └── noctalia.nix               # Noctalia bar (Home Manager module)
 ```
 

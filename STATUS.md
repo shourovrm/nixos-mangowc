@@ -19,7 +19,7 @@
 | --- | --- |
 | Display manager | greetd + tuigreet |
 | Desktop (fallback) | none |
-| Wayland compositor | Niri + MangoWC (mango) |
+| Wayland compositor | Niri |
 | Status bar | Noctalia Shell |
 | Wallpaper | `wallhaven_eo2p3w.jpg` (Noctalia wallpaper engine via `~/.local/share/wallpapers/`) |
 | Audio | PipeWire |
@@ -47,7 +47,7 @@
 Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex-workshop`)
 
 ### Niri session tools (in `home/rms/home-modules/niri.nix`)
-`fuzzel` `foot` `swaylock` `swayidle` `wl-clipboard` `wlopm` `grim` `slurp` `libnotify` `mako` `brightnessctl` `playerctl`
+`fuzzel` `foot` `swaylock` `swayidle` `wl-clipboard` `wlopm` `grim` `slurp` `libnotify` `mako` `brightnessctl` `playerctl` `gcr`
 
 ### Active Home Manager modules
 | Module | Purpose |
@@ -73,7 +73,7 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 | --- | --- |
 | `Super+D` | Toggle Noctalia launcher |
 | `Super+Space` | Switch keyboard layout (next) |
-| `Super+Return` | Open foot terminal |
+| `Super+T` | Open foot terminal |
 | `Super+S` | Full-screen screenshot |
 | `Print` | Interactive region screenshot |
 
@@ -88,7 +88,7 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 | Trigger | Action |
 | --- | --- |
 | 5 min idle | `swaylock` dark screen (`-c 1a1a2e`) |
-| 5 min 30 s idle | Monitors off (`niri msg action power-off-monitors`) |
+| 10 min idle | Monitors off (`wlopm --off '*'`) |
 | Before sleep | `swaylock` (lid close, etc.) |
 | 3 h idle on battery | Suspend |
 | On AC power | Never auto-suspends |
@@ -107,9 +107,12 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 
 ### 2026-03-25
 - **Home Manager layout:** renamed the Home Manager tree to `home/rms/home-modules/` and updated imports, docs, and status references to match
+- **Niri-only session:** removed MangoWC from the host and Home Manager imports, dropped mango-specific docs/modules, and made tuigreet advertise Niri as the only compositor session
+- **Portals and keyring:** switched Niri screen sharing to `xdg-desktop-portal-gnome`, kept GTK as the file chooser portal, enabled system-level `gnome-keyring` with PAM unlock, and added `gcr` for keyring prompts
+- **Lightweight desktop:** removed the leftover standalone wallpaper dependency, kept Noctalia as the only wallpaper layer, set `GTK_THEME`, made Thunar the default directory handler, and fixed idle timing to lock at 5 min and power displays off at 10 min
 
 ### 2026-03-24 (session 11)
-- **Noctalia wallpaper engine:** switched v2 Niri + MangoWC from `swaybg` to Noctalia's built-in wallpaper layer; wallpaper now comes from `~/.local/share/wallpapers/` and uses `wallhaven_eo2p3w.jpg` as the seeded default with transitions disabled
+- **Noctalia wallpaper engine:** switched v2 from a standalone wallpaper setter to Noctalia's built-in wallpaper layer; wallpaper now comes from `~/.local/share/wallpapers/` and uses `wallhaven_eo2p3w.jpg` as the seeded default with transitions disabled
 - **MangoWC idle / power:** MangoWC now locks after 5 min, turns displays off after 10 min via `wlopm`, locks before sleep, and only suspends after 3 h on battery; on AC it never auto-suspends
 - **Status / docs:** refreshed v2 status to reflect greetd + tuigreet, MangoWC availability, Noctalia wallpaper handling, and updated session tooling
 

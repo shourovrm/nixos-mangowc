@@ -32,10 +32,9 @@
     [ "/run/current-system/sw/share" ];
 
   # ── Keyring: unlock gnome-keyring-daemon at greetd login ─────────────────
-  # PAM auto-unlocks the keyring when the greeter authenticates the user.
-  # Combined with `services.gnome-keyring.enable` in Home Manager, this
-  # gives apps (VSCode, SSH agent, etc.) access to the secret service without
-  # any GNOME session being required.
+  # Run the keyring daemon outside GNOME and unlock it through greetd/login PAM
+  # so apps can use org.freedesktop.secrets in the Niri session.
+  services.gnome.gnome-keyring.enable = true;
   security.pam.services.greetd.enableGnomeKeyring = true;
   security.pam.services.login.enableGnomeKeyring  = true;
 

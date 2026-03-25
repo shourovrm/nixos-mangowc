@@ -13,7 +13,6 @@
     ./home-modules/neovim.nix
     ./home-modules/newsboat.nix  # Newsboat RSS reader
     ./home-modules/niri.nix
-    ./home-modules/mangowc.nix
     ./home-modules/noctalia.nix
     ./home-modules/gtk.nix           # v2: GTK theming + dconf (no GNOME session)
     ./home-modules/clipboard.nix     # v2: cliphist persistent clipboard history

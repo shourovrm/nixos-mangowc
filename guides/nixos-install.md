@@ -1,7 +1,7 @@
 # NixOS Fresh Installation Guide (v2)
 
 Complete walkthrough for the `nixos-config-v2/` setup.
-This variant uses **greetd + tuigreet**, **Niri + MangoWC**, and **no GNOME/GDM**.
+This variant uses **greetd + tuigreet**, **Niri**, and **no GNOME/GDM**.
 
 ---
 
@@ -10,7 +10,7 @@ This variant uses **greetd + tuigreet**, **Niri + MangoWC**, and **no GNOME/GDM*
 Compared with the main config, v2 changes the desktop stack in a few important ways:
 
 - login manager: `greetd` + `tuigreet`
-- sessions: `niri` and `mango`
+- session: `niri`
 - wallpaper: Noctalia's built-in wallpaper engine
 - file/device support: `udisks2`, `gvfs`, `udiskie`, NTFS/exFAT tools
 - clipboard history: `cliphist`
@@ -110,6 +110,29 @@ mkdir -p /mnt/boot/efi
 mount /dev/disk/by-label/EFI /mnt/boot/efi
 ```
 
+### Optional: create a swapfile
+
+Use this if you want swap without a dedicated swap partition.
+
+```bash
+fallocate -l 8G /mnt/swapfile
+chmod 600 /mnt/swapfile
+mkswap /mnt/swapfile
+swapon /mnt/swapfile
+```
+
+Add the matching entry after `nixos-generate-config` in
+`hosts/rms-laptop/hardware-configuration.nix`:
+
+```nix
+swapDevices = [
+   {
+      device = "/swapfile";
+      size = 8192;
+   }
+];
+```
+
 ---
 
 ## 4B. Dual-boot alongside Windows
@@ -147,6 +170,20 @@ mount /dev/nvme0n1p1 /mnt/boot/efi   # existing Windows EFI partition
 ```
 
 Do **not** reformat the Windows EFI partition.
+
+### Optional: create a swapfile
+
+After mounting `/mnt`, create swap in the new NixOS root:
+
+```bash
+fallocate -l 8G /mnt/swapfile
+chmod 600 /mnt/swapfile
+mkswap /mnt/swapfile
+swapon /mnt/swapfile
+```
+
+Then add the same `swapDevices` entry shown above to
+`hosts/rms-laptop/hardware-configuration.nix` after generating the hardware config.
 
 ---
 
@@ -250,9 +287,8 @@ You will land in **tuigreet**, not GDM.
 Available sessions:
 
 - `niri`
-- `mango`
 
-Choose a session, log in as `rms`, and then run:
+Choose the session, log in as `rms`, and then run:
 
 ```bash
 cd ~/nixos-config-v2
@@ -267,10 +303,9 @@ This ensures the user-level config is fully applied.
 
 ### Sessions
 
-At tuigreet, verify both sessions appear:
+At tuigreet, verify the Niri session appears:
 
 - `niri`
-- `mango`
 
 ### Wallpaper
 
@@ -283,7 +318,7 @@ The seeded default is:
 
 ### Clipboard history
 
-`Super+V` opens the cliphist picker in both Niri and MangoWC.
+`Super+V` opens the cliphist picker in Niri.
 
 ### Storage and file managers
 
@@ -326,7 +361,7 @@ nix flake check --no-build
 
 ## Troubleshooting
 
-### `mango` does not appear in tuigreet
+### `niri` does not appear in tuigreet
 
 Rebuild the system and confirm the session file exists:
 
@@ -337,7 +372,6 @@ ls /run/current-system/sw/share/wayland-sessions/
 Expected:
 
 ```text
-mango.desktop
 niri.desktop
 ```
 
@@ -356,4 +390,4 @@ This is intentional. v2 only auto-suspends after 3 h idle on battery.
 
 ### Displays should turn off after idle
 
-v2 uses `wlopm`, so both Niri and MangoWC can turn outputs off without compositor-specific IPC.
+v2 uses `wlopm`, so Niri can power displays off after 10 minutes idle without compositor-specific IPC.

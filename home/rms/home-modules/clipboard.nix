@@ -12,8 +12,8 @@
 
   # ── Autostart: feed clipboard events into cliphist ────────────────────────
   # This systemd user service runs wl-paste in watch mode and pipes each new
-  # clipboard entry into cliphist.  It starts automatically in any Wayland
-  # session (niri, mango, …) because it is a graphical-session-pre.target dep.
+  # clipboard entry into cliphist. It starts automatically in the Wayland
+  # session because it is a graphical-session-pre.target dependency.
   systemd.user.services.cliphist = {
     Unit = {
       Description = "Clipboard history daemon (cliphist)";
@@ -28,7 +28,6 @@
   };
 
   # ── Keybind hint ──────────────────────────────────────────────────────────
-  # Both niri.nix and mangowc.nix bind Super+V to the clipboard picker:
+  # niri.nix binds Super+V to the clipboard picker:
   #   cliphist list | fuzzel --dmenu | cliphist decode | wl-copy
-  # Add the same bind to any additional compositor you set up.
 }

@@ -10,7 +10,6 @@
     ../../modules/nixos/audio.nix
     ../../modules/nixos/nix-settings.nix
     ../../modules/nixos/niri.nix
-    ../../modules/nixos/mangowc.nix
     ../../modules/nixos/noctalia-system.nix
     ../../modules/nixos/filesystems.nix  # NTFS/FAT, udisks2, gvfs, dconf, Thunar
   ];

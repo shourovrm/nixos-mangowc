@@ -8,8 +8,6 @@
 
 {
   home.packages = with pkgs; [
-    nautilus          # GNOME file manager
-    nautilus-python   # Python extensions support for Nautilus
     rclone            # Cloud storage CLI (Google Drive, S3, Dropbox, etc.)
     keepassxc         # Password manager with optional secret-service provider
   ];
@@ -25,12 +23,12 @@
     tray      = "auto";  # show tray icon if a system tray is available
   };
 
-  # ── Nautilus as default file manager for xdg-open ─────────────────────────
+  # ── Thunar as default file manager for xdg-open ───────────────────────────
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
-      "inode/directory"           = [ "org.gnome.Nautilus.desktop" ];
-      "application/x-directory"   = [ "org.gnome.Nautilus.desktop" ];
+      "inode/directory"           = [ "thunar.desktop" ];
+      "application/x-directory"   = [ "thunar.desktop" ];
     };
   };
 

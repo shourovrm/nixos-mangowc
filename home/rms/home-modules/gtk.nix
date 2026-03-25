@@ -49,8 +49,10 @@
   };
 
   # ── Cursor environment variable ───────────────────────────────────────────
-  # Some XWayland apps respect XCURSOR_THEME for the cursor name.
+  # Some GTK/XWayland apps still respect environment overrides more reliably
+  # than settings portals, so export the theme and cursor explicitly.
   home.sessionVariables = {
+    GTK_THEME     = "adw-gtk3-dark";
     XCURSOR_THEME = "Adwaita";
     XCURSOR_SIZE  = "24";
   };

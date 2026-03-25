@@ -83,9 +83,8 @@
 
       colorSchemes.predefinedScheme = "Monochrome";
 
-      # Use Noctalia's wallpaper engine as the single background layer for both
-      # Niri and MangoWC in v2. This avoids a separate swaybg layer and keeps
-      # overview integration consistent.
+      # Use Noctalia's wallpaper engine as the single background layer in v2.
+      # This keeps overview integration consistent without a separate wallpaper app.
       wallpaper = {
         enabled = true;
         directory = "${config.home.homeDirectory}/.local/share/wallpapers";

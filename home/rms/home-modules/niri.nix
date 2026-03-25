@@ -8,16 +8,16 @@
     fuzzel          # app launcher
     foot            # Wayland-native terminal
     swaylock        # screen locker
-    swaybg          # wallpaper setter
     swayidle        # idle management
     wl-clipboard    # clipboard (wl-copy / wl-paste)
-    wlopm           # wlroots output power manager (monitor DPMS, all WCs)
+    wlopm           # monitor power manager used by swayidle
     grim            # screenshots
     slurp           # region selection for screenshots
     libnotify       # notify-send
     mako            # notification daemon
     brightnessctl   # screen brightness (XF86 keys)
     playerctl       # media playback control (XF86 keys)
+    gcr             # SystemPrompter for gnome-keyring in non-GNOME sessions
   ];
 
   services.mako = {
@@ -29,10 +29,9 @@
   };
 
   # ── Idle / power management ───────────────────────────────────────────────
-  # wlopm is used for monitor power-off instead of the niri-specific IPC
-  # command, so the same swayidle service works in both Niri and MangoWC
-  # sessions.  Full paths are required because swayidle's systemd unit runs
-  # with a restricted PATH.
+  # Lock after 5 minutes, power displays off after 10 minutes, and suspend
+  # after 3 hours only while the machine is discharging. Full paths are used
+  # because swayidle's systemd unit runs with a restricted PATH.
   services.swayidle = {
     enable = true;
     events = [
@@ -44,7 +43,7 @@
         command = "${pkgs.swaylock}/bin/swaylock -f -c 1a1a2e";
       }
       {
-        timeout = 330;
+        timeout = 600;
         command       = "${pkgs.wlopm}/bin/wlopm --off '*'";
         resumeCommand = "${pkgs.wlopm}/bin/wlopm --on '*'";
       }
@@ -56,33 +55,15 @@
   };
 
   # ── Wallpaper ───────────────────────────────────────────────────────────
-  # Copy wallhaven wallpaper from the repo into a stable user path so both
-  # Niri (swaybg), MangoWC (autostart) and GNOME (dconf) can reference it
-  # without depending on the nixos-config directory being at a fixed location.
+  # Seed Noctalia's wallpaper directory from the repo so the shell's built-in
+  # wallpaper layer can use a stable path independent of the checkout location.
   home.file.".local/share/wallpapers/wallhaven_eo2p3w.jpg".source =
     ../../../wallhaven_eo2p3w.jpg;
 
-  # GNOME wallpaper (dconf/GSettings — only used in the GNOME fallback session)
-  dconf.settings = {
-    "org/gnome/desktop/background" = {
-      picture-uri      = "file:///home/rms/.local/share/wallpapers/wallhaven_eo2p3w.jpg";
-      picture-uri-dark = "file:///home/rms/.local/share/wallpapers/wallhaven_eo2p3w.jpg";
-      picture-options  = "zoom";
-    };
-    "org/gnome/desktop/screensaver" = {
-      picture-uri     = "file:///home/rms/.local/share/wallpapers/wallhaven_eo2p3w.jpg";
-      picture-options = "zoom";
-    };
-  };
-
   # ── Secret service (keyring) ─────────────────────────────────────────────
-  # gnome-keyring-daemon implements org.freedesktop.Secret.Service.
-  # It is a small daemon (~3 MB RAM) — NOT gnome-shell or any GNOME desktop.
-  # PAM unlocks it at GDM login (see modules/nixos/desktop.nix).
-  # Most apps (Thunderbird etc.) use libsecret automatically and need no flag.
-  # Chromium-based/Electron apps need an explicit flag because they don't
-  # auto-detect the secret store in non-GNOME Wayland sessions.
-  services.gnome-keyring.enable = true;
+  # The daemon itself is enabled at the NixOS level so PAM can unlock it.
+  # gcr supplies the SystemPrompter used when apps need to ask for access.
+  # Chromium-based/Electron apps still need an explicit password-store flag.
 
   # Chromium / Electron global flags — read by Chromium, Chrome, and most
   # Electron apps (VS Code uses its own override in packages.nix instead).
@@ -237,6 +218,9 @@
     }
 
     // ── Startup ───────────────────────────────────────────────────────────
+    // Export the display/session environment into the user D-Bus activation
+    // environment so portals and gcr prompts can find the active Wayland seat.
+    spawn-at-startup "${pkgs.dbus}/bin/dbus-update-activation-environment" "--systemd" "DISPLAY" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "XDG_SESSION_TYPE" "NIRI_SOCKET"
     spawn-at-startup "noctalia-shell"
     // Polkit agent — needed since there is no GNOME session in v2
     spawn-at-startup "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"

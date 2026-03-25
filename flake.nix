@@ -3,7 +3,7 @@
 # together into a single nixosConfiguration for each machine.
 # Add a new machine: duplicate the rms-laptop block, change hostName + hardware.
 {
-  description = "rms NixOS v2 — greetd + tuigreet, MangoWC + Niri, no GNOME";
+  description = "rms NixOS v2 — greetd + tuigreet, Niri, no GNOME";
 
   inputs = {
     # nixos-unstable: rolling channel — latest packages but may change APIs.

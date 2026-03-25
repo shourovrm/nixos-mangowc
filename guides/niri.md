@@ -2,8 +2,7 @@
 
 Quick reference for the Niri Wayland compositor session.
 
-Switch sessions at the GDM login screen: click the **gear icon** and pick **Niri**.
-GNOME remains available the same way.
+Log in through **greetd + tuigreet** and choose the **niri** session.
 
 ---
 
@@ -11,7 +10,7 @@ GNOME remains available the same way.
 
 | Action | Keys |
 | --- | --- |
-| Switch English ↔ Bangla (Probhat) | `Alt + Shift` |
+| Switch English ↔ Bangla (Probhat) | `Super + Space` |
 
 ---
 
@@ -20,7 +19,7 @@ GNOME remains available the same way.
 | Action | Keys |
 | --- | --- |
 | Open terminal (foot) | `Super + T` |
-| Open app launcher (fuzzel) | `Super + D` |
+| Toggle Noctalia launcher | `Super + D` |
 | Lock screen | `Super + Ctrl + L` |
 
 ---
@@ -66,7 +65,7 @@ Screenshots are saved to `~/Pictures/Screenshots/` by niri's built-in screenshot
 
 | Action | Keys |
 | --- | --- |
-| Toggle noctalia launcher | `Super + Space` |
+| Switch keyboard layout | `Super + Space` |
 | Toggle notification panel | `Super + N` |
 | Toggle control centre | `Super + B` |
 | Toggle overview | `Super + O` |
@@ -107,7 +106,7 @@ Screenshots are saved to `~/Pictures/Screenshots/` by niri's built-in screenshot
 ## Secret service (keyring)
 
 `gnome-keyring-daemon` runs as a small background daemon (~3 MB RAM) — not gnome-shell.
-It is auto-unlocked at GDM login via PAM (`modules/nixos/desktop.nix`).
+It is enabled system-wide and auto-unlocked at greetd login via PAM (`modules/nixos/greetd.nix`).
 
 Most apps using `libsecret` work automatically. Chromium-based and Electron apps need flags:
 
