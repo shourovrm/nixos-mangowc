@@ -4,7 +4,7 @@
 
 ---
 
-## Current configuration — 2026-03-25
+## Current configuration — 2026-03-26
 
 ### Host
 
@@ -143,6 +143,10 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 ---
 
 ## Changelog
+
+### 2026-03-26
+
+- **Noctalia network fix:** verified the NixOS-side requirements were already enabled (`networking.networkmanager`, `networkmanager` group, Bluetooth/power/battery daemons); the missing piece was Noctalia's own runtime PATH, so its wrapped package now explicitly includes `nmcli` and `bluetoothctl` via `networkmanager` and `bluez`
 
 ### 2026-03-25
 

@@ -7,6 +7,12 @@
 
   programs.noctalia-shell = {
     enable = true;
+    # Noctalia's Network/Bluetooth services shell out to nmcli/bluetoothctl.
+    # Bundle those CLIs into the wrapped runtime PATH instead of relying on
+    # the compositor session environment to expose /run/current-system/sw/bin.
+    package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
+      extraPackages = with pkgs; [ networkmanager bluez ];
+    };
 
     settings = {
       bar = {
