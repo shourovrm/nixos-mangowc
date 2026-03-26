@@ -1,7 +1,7 @@
 # home/rms/home-modules/niri.nix
 # Niri compositor user configuration and helper tools.
 # This setup uses greetd (not GDM) and wlopm for generic wlroots monitor power-off.
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   home.packages = with pkgs; [
@@ -19,6 +19,7 @@
     brightnessctl   # screen brightness (XF86 keys)
     playerctl       # media playback control (XF86 keys)
     gcr             # SystemPrompter for gnome-keyring in non-GNOME sessions
+    wtype           # needed for Raffi native-mode insert actions
   ];
 
   services.mako = {
@@ -73,7 +74,9 @@
     --password-store=gnome-libsecret
   '';
 
-  # Fuzzel is the frontend and Raffi provides the launcher entries / actions.
+  # Fuzzel styling remains useful for other menus even though Raffi now runs in
+  # native mode to expose calculator, currency, file browser, snippets, and
+  # other built-in addons.
   xdg.configFile."fuzzel/fuzzel.ini".text = ''
     dpi-aware=yes
     font=JetBrains Mono:size=10
@@ -95,6 +98,30 @@
   '';
 
   xdg.configFile."raffi/raffi.yaml".text = ''
+    general:
+      ui_type: fuzzel
+      theme: dark
+      font_family: "JetBrains Mono"
+      font_size: 18
+      window_width: 920
+      window_height: 560
+      padding: 18
+      sort_mode: hybrid
+      theme_colors:
+        bg_base: "#1e1e2e"
+        bg_input: "#313244"
+        accent: "#cba6f7"
+        accent_hover: "#89b4fa"
+        text_main: "#cdd6f4"
+        text_muted: "#6c7086"
+        selection_bg: "#45475a"
+        border: "#585b70"
+      fallbacks:
+        - addons.web_searches."Google"
+        - addons.web_searches."GitHub"
+        - addons.text_snippets."Emails"
+        - addons.script_filters."Dates"
+
     browser:
       binary: firefox
       description: "Firefox"
@@ -143,6 +170,88 @@
       args: ["-f"]
       description: "Lock screen"
       icon: system-lock-screen
+
+    addons:
+      calculator:
+        enabled: true
+      currency:
+        enabled: true
+        trigger: "$"
+        default_currency: USD
+        currencies:
+          - USD
+          - EUR
+          - GBP
+          - BDT
+          - CAD
+      file_browser:
+        enabled: true
+        show_hidden: false
+      web_searches:
+        - name: "Google"
+          keyword: "g"
+          url: "https://google.com/search?q={query}"
+          icon: google
+        - name: "GitHub"
+          keyword: "gh"
+          url: "https://github.com/search?q={query}"
+          icon: github
+        - name: "Nix Packages"
+          keyword: "np"
+          url: "https://search.nixos.org/packages?channel=unstable&query={query}"
+          icon: nix-snowflake
+        - name: "Wikipedia"
+          keyword: "wiki"
+          url: "https://en.wikipedia.org/wiki/Special:Search?search={query}"
+          icon: wikipedia
+      text_snippets:
+        - name: "Emails"
+          keyword: "em"
+          icon: mail
+          action: insert
+          secondary_action: copy
+          snippets:
+            - name: "Personal Email"
+              value: "shourovrm@gmail.com"
+            - name: "GitHub Noreply"
+              value: "shourovrm@users.noreply.github.com"
+        - name: "Paths"
+          keyword: "cfg"
+          icon: folder
+          action: copy
+          snippets:
+            - name: "NixOS Config"
+              value: "${config.home.homeDirectory}/nixos-config"
+            - name: "Google Drive"
+              value: "${config.home.homeDirectory}/GoogleDrive"
+      script_filters:
+        - name: "Dates"
+          keyword: "date"
+          command: "${pkgs.python3}/bin/python3"
+          args: ["${config.home.homeDirectory}/.config/raffi/scripts/date-snippets.py"]
+          icon: calendar
+          action: copy
+  '';
+
+  xdg.configFile."raffi/scripts/date-snippets.py".text = ''
+    #!${pkgs.python3}/bin/python3
+    import json
+    import sys
+    from datetime import datetime, timedelta
+
+    query = " ".join(sys.argv[1:]).lower().strip()
+    now = datetime.now()
+    items = [
+        {"title": "Today", "subtitle": now.strftime("%A, %d %B %Y"), "arg": now.strftime("%Y-%m-%d")},
+        {"title": "Tomorrow", "subtitle": (now + timedelta(days=1)).strftime("%A, %d %B %Y"), "arg": (now + timedelta(days=1)).strftime("%Y-%m-%d")},
+        {"title": "Current Time", "subtitle": now.strftime("Local time"), "arg": now.strftime("%H:%M:%S")},
+        {"title": "ISO Timestamp", "subtitle": now.strftime("Machine-friendly"), "arg": now.isoformat(timespec="seconds")},
+    ]
+
+    if query:
+        items = [item for item in items if query in item["title"].lower() or query in item["arg"].lower()]
+
+    print(json.dumps({"items": items}))
   '';
 
   # Polkit authentication agent for privilege dialogs inside niri
@@ -279,7 +388,7 @@
       Mod+O       { toggle-overview; }
 
       // Launchers
-      Mod+D       { spawn "sh" "-c" "cmd=$(raffi -p); [ -n \"$cmd\" ] && eval \"$cmd\""; }  // Raffi 0.12 expects print-only output to be executed by the WM binding
+      Mod+D       { spawn "sh" "-c" "cmd=$(raffi -u fuzzel -p); [ -n \"$cmd\" ] && eval \"$cmd\""; }  // keep the working Fuzzel launcher path; native Raffi is configured separately but the packaged native UI currently fails in this environment
       Mod+Shift+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
       Mod+N     { spawn "noctalia-shell" "ipc" "call" "notifications" "togglePanel"; }
       Mod+B     { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }

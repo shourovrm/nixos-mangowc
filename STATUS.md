@@ -54,11 +54,11 @@
 
 ### VSCode (Home Manager — `vscode.nix`)
 
-Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex-workshop`)
+Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex-workshop`); `settings.json` is seeded by Home Manager once and then left writable for the VS Code UI
 
 ### Niri session tools (in `home/rms/home-modules/niri.nix`)
 
-`fuzzel` `raffi` `foot` `swaylock` `swayidle` `wl-clipboard` `wlopm` `grim` `slurp` `libnotify` `mako` `brightnessctl` `playerctl` `gcr`
+`fuzzel` `raffi` `foot` `swaylock` `swayidle` `wl-clipboard` `wlopm` `grim` `slurp` `libnotify` `mako` `brightnessctl` `playerctl` `gcr` `wtype`
 
 ### Active Home Manager modules
 
@@ -82,7 +82,7 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 
 | Concern | Detail |
 | --- | --- |
-| Default launcher | Raffi via `raffi -p` + Fuzzel (`Super+D`) |
+| Default launcher | Raffi via `raffi -u fuzzel -p` (`Super+D`) |
 | Alt launcher | Noctalia launcher (`Super+Shift+D`) |
 | Raffi config | `~/.config/raffi/raffi.yaml` |
 | Fuzzel config | `~/.config/fuzzel/fuzzel.ini` |
@@ -105,7 +105,7 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 
 | Key | Action |
 | --- | --- |
-| `Super+D` | Open Raffi launcher via `raffi -p` |
+| `Super+D` | Open Raffi launcher via Fuzzel |
 | `Super+Shift+D` | Toggle Noctalia launcher |
 | `Super+Space` | Switch keyboard layout (next) |
 | `Super+T` | Open foot terminal |
@@ -147,6 +147,9 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 ### 2026-03-26
 
 - **Repo/docs rename:** updated docs to use `~/nixos-config` instead of `~/nixos-config-v2`, and switched clone instructions to `https://github.com/shourovrm/nixos-niri-config`
+- **VS Code settings:** stopped managing `~/.config/Code/User/settings.json` as a read-only Nix-store symlink; the file is now seeded once with the LaTeX settings and remains writable from the VS Code UI
+- **Raffi upstream features:** reviewed upstream Raffi docs and added config for calculator, currency converter, file browser, theme settings, web searches, text snippets, and a date script filter; kept `Super+D` on the working Fuzzel launcher path because the packaged native UI currently fails in this environment
+- **Raffi helpers:** added `wtype` for snippet insert actions and a small date JSON script under `~/.config/raffi/scripts/` for script filter results
 - **Install guide:** removed v2-specific wording, changed the flow to clone into `/mnt/home/rms/nixos-config`, and moved the first post-install rebuild to a TTY before the first graphical login
 - **Install permissions:** documented fixing ownership with `chown -R rms:users ~/nixos-config` and ensuring user write access before the first rebuild
 - **Shell setup:** added `~/.local/bin` to PATH, enabled Liquid Prompt for interactive Bash shells, and kept the default uv environment auto-activation
