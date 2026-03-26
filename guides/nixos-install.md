@@ -215,6 +215,7 @@ Clone the repo directly into the target filesystem:
 ```bash
 mkdir -p /mnt/home/rms
 git clone https://github.com/shourovrm/nixos-niri-config /mnt/home/rms/nixos-config
+chown -R 1000:100 /mnt/home/rms
 ```
 
 ---
