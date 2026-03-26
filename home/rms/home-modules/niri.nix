@@ -35,9 +35,9 @@
   # because swayidle's systemd unit runs with a restricted PATH.
   services.swayidle = {
     enable = true;
-    events = [
-      { event = "before-sleep"; command = "${pkgs.swaylock}/bin/swaylock -f -c 1a1a2e"; }
-    ];
+    events = {
+      before-sleep = "${pkgs.swaylock}/bin/swaylock -f -c 1a1a2e";
+    };
     timeouts = [
       {
         timeout = 300;

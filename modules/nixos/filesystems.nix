@@ -28,9 +28,9 @@
   # ── Thunar file manager (system-level integration) ─────────────────────────
   programs.thunar = {
     enable  = true;
-    plugins = with pkgs.xfce; [
-      thunar-volman          # auto-mount removable drives inside Thunar
-      thunar-archive-plugin  # right-click to (un)compress archives
+    plugins = [
+      pkgs.thunar-volman          # auto-mount removable drives inside Thunar
+      pkgs.thunar-archive-plugin  # right-click to (un)compress archives
     ];
   };
 

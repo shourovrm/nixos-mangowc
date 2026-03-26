@@ -12,11 +12,11 @@
     # Allow installing extra extensions from the marketplace at runtime.
     mutableExtensionsDir = true;
 
-    extensions = with pkgs.vscode-extensions; [
+    profiles.default.extensions = with pkgs.vscode-extensions; [
       james-yu.latex-workshop
     ];
 
-    userSettings = {
+    profiles.default.userSettings = {
       # ── LaTeX Workshop ──────────────────────────────────────────────────
       # Recompile on every save
       "latex-workshop.latex.autoBuild.run"         = "onSave";

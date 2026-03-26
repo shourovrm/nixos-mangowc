@@ -16,7 +16,7 @@
         # --time: show clock  --remember: remember last user + session
         # --sessions: list available Wayland/X11 sessions from the system path
         command = ''
-          ${pkgs.greetd.tuigreet}/bin/tuigreet \
+          ${pkgs.tuigreet}/bin/tuigreet \
             --time \
             --remember \
             --remember-session \
