@@ -1,4 +1,4 @@
-# home/rms/home-modules/clipboard.nix  (nixos-config-v2)
+# home/rms/home-modules/clipboard.nix
 # Persistent clipboard history using cliphist + wl-clipboard.
 # cliphist stores every clipboard entry (text and images) and exposes a dmenu-
 # compatible list so you can paste any previous entry via fuzzel.

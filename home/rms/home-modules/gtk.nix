@@ -1,4 +1,4 @@
-# home/rms/home-modules/gtk.nix  (nixos-config-v2)
+# home/rms/home-modules/gtk.nix
 # GTK theming and dconf settings so GTK apps (Nautilus, Thunar, Firefox, etc.)
 # look consistent and use dark Adwaita rather than ugly unstyled defaults.
 { pkgs, ... }:

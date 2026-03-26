@@ -1,4 +1,4 @@
-# home/rms/home-modules/filemanager.nix  (nixos-config-v2)
+# home/rms/home-modules/filemanager.nix
 # File management, cloud sync, and removable-media automount.
 #   Thunar    — XFCE file manager (registered via programs.thunar in NixOS module)
 #   rclone    — Google Drive / cloud sync (CLI; create a `gdrive` remote)

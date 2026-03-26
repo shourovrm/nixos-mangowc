@@ -1,6 +1,6 @@
-# home/rms/home-modules/niri.nix  (nixos-config-v2)
+# home/rms/home-modules/niri.nix
 # Niri compositor user configuration and helper tools.
-# v2 uses greetd (not GDM) and wlopm for generic wlroots monitor power-off.
+# This setup uses greetd (not GDM) and wlopm for generic wlroots monitor power-off.
 { pkgs, ... }:
 
 {
@@ -95,76 +95,54 @@
   '';
 
   xdg.configFile."raffi/raffi.yaml".text = ''
-    version: 1
+    browser:
+      binary: firefox
+      description: "Firefox"
+      icon: firefox
 
-    general:
-      ui_type: fuzzel
-      max_history: 20
+    terminal:
+      binary: foot
+      description: "Foot terminal"
+      icon: utilities-terminal
 
-    launchers:
-      browser:
-        binary: firefox
-        description: "Firefox"
-        icon: firefox
+    files:
+      binary: thunar
+      description: "Thunar file manager"
+      icon: org.xfce.thunar
 
-      terminal:
-        binary: foot
-        description: "Foot terminal"
-        icon: utilities-terminal
+    downloads:
+      binary: thunar
+      args: ["$HOME/Downloads"]
+      description: "Downloads"
+      icon: folder-download
 
-      files:
-        binary: thunar
-        description: "Thunar file manager"
-        icon: org.xfce.thunar
+    editor:
+      binary: code
+      description: "VS Code"
+      icon: vscode
 
-      downloads:
-        binary: thunar
-        args: ["~/Downloads"]
-        description: "Downloads"
-        icon: folder-download
+    newsboat:
+      binary: foot
+      args: ["newsboat"]
+      description: "Newsboat"
+      icon: applications-internet
 
-      editor:
-        binary: code
-        description: "VS Code"
-        icon: vscode
+    weather:
+      binary: weather-open
+      description: "Weather forecast"
+      icon: weather-overcast
 
-      newsboat:
-        binary: foot
-        args: ["newsboat"]
-        description: "Newsboat"
-        icon: applications-internet
+    google_drive:
+      binary: thunar
+      args: ["$HOME/GoogleDrive"]
+      description: "Google Drive"
+      icon: folder-remote
 
-      weather:
-        binary: weather-open
-        description: "Weather forecast"
-        icon: weather-overcast
-
-      google_drive:
-        binary: thunar
-        args: ["~/GoogleDrive"]
-        description: "Google Drive"
-        icon: folder-remote
-
-      lock:
-        binary: swaylock
-        args: ["-f"]
-        description: "Lock screen"
-        icon: system-lock-screen
-
-    addons:
-      web_searches:
-        - name: "Google"
-          keyword: "g"
-          url: "https://www.google.com/search?q={query}"
-          icon: google
-        - name: "GitHub"
-          keyword: "gh"
-          url: "https://github.com/search?q={query}"
-          icon: github
-        - name: "Nix Packages"
-          keyword: "np"
-          url: "https://search.nixos.org/packages?channel=unstable&query={query}"
-          icon: nix-snowflake
+    lock:
+      binary: swaylock
+      args: ["-f"]
+      description: "Lock screen"
+      icon: system-lock-screen
   '';
 
   # Polkit authentication agent for privilege dialogs inside niri
@@ -301,7 +279,7 @@
       Mod+O       { toggle-overview; }
 
       // Launchers
-      Mod+D       { spawn "raffi"; }  // default launcher: fuzzel frontend with Raffi entries
+      Mod+D       { spawn "sh" "-c" "cmd=$(raffi -p); [ -n \"$cmd\" ] && eval \"$cmd\""; }  // Raffi 0.12 expects print-only output to be executed by the WM binding
       Mod+Shift+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
       Mod+N     { spawn "noctalia-shell" "ipc" "call" "notifications" "togglePanel"; }
       Mod+B     { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
@@ -318,7 +296,7 @@
     // environment so portals and gcr prompts can find the active Wayland seat.
     spawn-at-startup "${pkgs.dbus}/bin/dbus-update-activation-environment" "--systemd" "DISPLAY" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "XDG_SESSION_TYPE" "NIRI_SOCKET"
     spawn-at-startup "noctalia-shell"
-    // Polkit agent — needed since there is no GNOME session in v2
+    // Polkit agent — needed since there is no GNOME session in this setup
     spawn-at-startup "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
   '';
 }

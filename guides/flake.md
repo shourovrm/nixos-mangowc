@@ -8,8 +8,8 @@ Day-to-day and maintenance commands for this flake-based NixOS configuration.
 
 | Task | Command |
 | --- | --- |
-| Rebuild & switch | `sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop` |
-| Test without switching | `sudo nixos-rebuild test --flake ~/nixos-config-v2#rms-laptop` |
+| Rebuild & switch | `sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop` |
+| Test without switching | `sudo nixos-rebuild test --flake ~/nixos-config#rms-laptop` |
 | Roll back | `sudo nixos-rebuild switch --rollback` |
 | Garbage collect | `sudo nix-collect-garbage -d` |
 
@@ -23,16 +23,16 @@ Aliases in `.bashrc`:
 
 ```bash
 # 1. Pull latest revisions for all inputs
-nix flake update ~/nixos-config-v2
+nix flake update ~/nixos-config
 
 # 2. Test the build before activating
-sudo nixos-rebuild test --flake ~/nixos-config-v2#rms-laptop
+sudo nixos-rebuild test --flake ~/nixos-config#rms-laptop
 
 # 3. Switch if it looks good
-sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
+sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop
 
 # 4. Commit the updated lock file
-cd ~/nixos-config-v2
+cd ~/nixos-config
 git add flake.lock
 git commit -m "chore: flake update $(date '+%Y-%m-%d')"
 

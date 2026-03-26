@@ -1,4 +1,4 @@
-# modules/nixos/niri.nix  (nixos-config-v2)
+# modules/nixos/niri.nix
 # Registers niri as the Wayland session and configures portals for a
 # greetd-managed, non-GNOME desktop.
 { pkgs, ... }:

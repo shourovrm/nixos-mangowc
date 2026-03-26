@@ -1,4 +1,4 @@
-# NixOS Configuration v2
+# NixOS Configuration
 
 A flake-based NixOS + Home Manager configuration for testing on a new machine.
 
@@ -21,10 +21,10 @@ export NIX_CONFIG="experimental-features = nix-command flakes"
 
 # Copy the target machine's hardware config
 sudo cp /etc/nixos/hardware-configuration.nix \
-        ~/nixos-config-v2/hosts/rms-laptop/hardware-configuration.nix
+        ~/nixos-config/hosts/rms-laptop/hardware-configuration.nix
 
 # Apply
-sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
+sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop
 ```
 
 ## Sessions available in tuigreet
@@ -36,7 +36,7 @@ sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
 ## Layout
 
 ```text
-nixos-config-v2/
+nixos-config/
 ├── flake.nix
 ├── hosts/rms-laptop/          # machine config (swap hardware-configuration.nix)
 ├── modules/nixos/
@@ -148,14 +148,14 @@ If NixOS is already installed and you just want to apply this config:
 export NIX_CONFIG="experimental-features = nix-command flakes"
 
 # Clone the repo
-git clone https://github.com/shourovrm/nixos-config.git ~/nixos-config-v2
+git clone https://github.com/shourovrm/nixos-niri-config.git ~/nixos-config
 
 # Copy your machine's hardware config into the repo
 sudo cp /etc/nixos/hardware-configuration.nix \
-    ~/nixos-config-v2/hosts/rms-laptop/hardware-configuration.nix
+    ~/nixos-config/hosts/rms-laptop/hardware-configuration.nix
 
 # Apply
-sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
+sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop
 ```
 
 ## Quick commands
@@ -164,7 +164,7 @@ sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
 | --- | --- |
 | Rebuild & switch | `nixswitch` |
 | Update flake + switch | `nixup` |
-| Test without switching | `sudo nixos-rebuild test --flake ~/nixos-config-v2#rms-laptop` |
+| Test without switching | `sudo nixos-rebuild test --flake ~/nixos-config#rms-laptop` |
 | Roll back | `sudo nixos-rebuild switch --rollback` |
 | Garbage collect | `sudo nix-collect-garbage -d` |
 

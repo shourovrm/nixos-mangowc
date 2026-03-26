@@ -1,4 +1,4 @@
-# modules/nixos/greetd.nix  (nixos-config-v2)
+# modules/nixos/greetd.nix
 # Login manager: greetd + tuigreet (replaces GDM + GNOME in v1).
 # greetd is a minimal, compositor-agnostic login manager.
 # tuigreet is a TUI greeter that lists all registered Wayland/X11 sessions.

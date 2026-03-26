@@ -35,7 +35,7 @@
 
 ### User packages (Home Manager — `packages.nix`)
 
-`opencode` `firefox` `btop` `ripgrep` `fd` `bat` `eza` `mpv` `gparted` `libreoffice` `evince` `nodejs` `uv` `miktex` `perl` `distrobox` `podman` `newsboat` `yt-dlp` `links2` `taskspooler` `urlscan`
+`opencode` `firefox` `btop` `rustc` `cargo` `rustfmt` `clippy` `rust-analyzer` `ripgrep` `fd` `bat` `eza` `pfetch` `liquidprompt` `mpv` `gparted` `libreoffice` `evince` `nodejs` `uv` `miktex` `perl` `distrobox` `podman` `newsboat` `yt-dlp` `links2` `taskspooler` `urlscan`
 
 ### File management / cloud packages (Home Manager — `filemanager.nix`)
 
@@ -68,7 +68,7 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 | `scripts.nix` | Wires `pkgs/` custom scripts into home.packages |
 | `vscode.nix` | VSCode with Wayland flags + LaTeX Workshop extension |
 | `git.nix` | Git config |
-| `bash.nix` | Shell config + general venv auto-activate |
+| `bash.nix` | Shell config, `~/.local/bin` PATH, Liquid Prompt, general venv auto-activate |
 | `gtk.nix` | GTK theme + dconf + `GTK_THEME` / cursor env vars |
 | `clipboard.nix` | cliphist clipboard watcher service |
 | `foot.nix` | foot terminal — Catppuccin Mocha, JetBrains Mono 10pt, 5% transparency |
@@ -82,7 +82,7 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 
 | Concern | Detail |
 | --- | --- |
-| Default launcher | Raffi using Fuzzel UI (`Super+D`) |
+| Default launcher | Raffi via `raffi -p` + Fuzzel (`Super+D`) |
 | Alt launcher | Noctalia launcher (`Super+Shift+D`) |
 | Raffi config | `~/.config/raffi/raffi.yaml` |
 | Fuzzel config | `~/.config/fuzzel/fuzzel.ini` |
@@ -105,7 +105,7 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 
 | Key | Action |
 | --- | --- |
-| `Super+D` | Open Raffi launcher (fuzzel UI) |
+| `Super+D` | Open Raffi launcher via `raffi -p` |
 | `Super+Shift+D` | Toggle Noctalia launcher |
 | `Super+Space` | Switch keyboard layout (next) |
 | `Super+T` | Open foot terminal |
@@ -146,13 +146,20 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 
 ### 2026-03-26
 
+- **Repo/docs rename:** updated docs to use `~/nixos-config` instead of `~/nixos-config-v2`, and switched clone instructions to `https://github.com/shourovrm/nixos-niri-config`
+- **Install guide:** removed v2-specific wording, changed the flow to clone into `/mnt/home/rms/nixos-config`, and moved the first post-install rebuild to a TTY before the first graphical login
+- **Install permissions:** documented fixing ownership with `chown -R rms:users ~/nixos-config` and ensuring user write access before the first rebuild
+- **Shell setup:** added `~/.local/bin` to PATH, enabled Liquid Prompt for interactive Bash shells, and kept the default uv environment auto-activation
+- **Packages:** added Rust toolchain packages (`rustc`, `cargo`, `rustfmt`, `clippy`, `rust-analyzer`) plus `pfetch` and `liquidprompt`
+- **Raffi fix:** replaced the incompatible newer YAML schema with Raffi 0.12's flat config format and updated the `Super+D` binding to execute `raffi -p` output correctly
+
 - **Noctalia network fix:** verified the NixOS-side requirements were already enabled (`networking.networkmanager`, `networkmanager` group, Bluetooth/power/battery daemons); the missing piece was Noctalia's own runtime PATH, so its wrapped package now explicitly includes `nmcli` and `bluetoothctl` via `networkmanager` and `bluez`
 
 ### 2026-03-25
 
-- **Docs review:** refreshed all guides to match the current Niri-only setup, standardized commands around `~/nixos-config-v2`, and removed stale Home Manager-only post-install steps
+- **Docs review:** refreshed all guides to match the current Niri-only setup, standardized commands around `~/nixos-config`, and removed stale Home Manager-only post-install steps
 - **Rclone guide:** added `guides/rclone.md` covering Google Drive remote setup, mounting, and the repo's `gdrive` / `~/GoogleDrive` convention
-- **Shell aliases:** fixed `nixswitch` and `nixup` to point at `~/nixos-config-v2` so the documented commands match the actual bash config
+- **Shell aliases:** fixed `nixswitch` and `nixup` to point at `~/nixos-config` so the documented commands match the actual bash config
 - **Home Manager layout:** renamed the Home Manager tree to `home/rms/home-modules/` and updated imports, docs, and status references to match
 - **Niri-only session:** removed MangoWC from the host and Home Manager imports, dropped mango-specific docs/modules, and made tuigreet advertise Niri as the only compositor session
 - **Portals and keyring:** switched Niri screen sharing to `xdg-desktop-portal-gnome`, kept GTK as the file chooser portal, enabled system-level `gnome-keyring` with PAM unlock, and added `gcr` for keyring prompts

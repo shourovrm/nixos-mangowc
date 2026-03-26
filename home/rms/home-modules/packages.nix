@@ -9,10 +9,17 @@
     opencode     # AI coding assistant (sourced from opencode-flake input)
     firefox      # web browser
     btop         # interactive process/resource monitor
+    rustc        # Rust compiler
+    cargo        # Rust package manager/build tool
+    rustfmt      # Rust formatter
+    clippy       # Rust linter
+    rust-analyzer # Rust language server
     ripgrep      # fast recursive grep (rg)
     fd           # fast alternative to find
     bat          # cat with syntax highlighting and paging
     eza          # modern ls replacement
+    pfetch       # lightweight system information summary
+    liquidprompt # adaptive shell prompt for Bash/Zsh
     mpv          # lightweight video/audio player
     gparted      # graphical partition editor (needs root)
     libreoffice  # office suite

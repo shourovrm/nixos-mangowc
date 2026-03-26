@@ -89,7 +89,7 @@
 
       colorSchemes.predefinedScheme = "Monochrome";
 
-      # Use Noctalia's wallpaper engine as the single background layer in v2.
+      # Use Noctalia's wallpaper engine as the single background layer in this setup.
       # This keeps overview integration consistent without a separate wallpaper app.
       wallpaper = {
         enabled = true;

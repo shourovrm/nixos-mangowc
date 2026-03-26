@@ -1,13 +1,13 @@
-# NixOS Fresh Installation Guide (v2)
+# NixOS Fresh Installation Guide
 
-Complete walkthrough for the `nixos-config-v2/` setup.
-This variant uses **greetd + tuigreet**, **Niri**, and **no GNOME/GDM**.
+Complete walkthrough for setting up this repository on a fresh machine.
+This setup uses **greetd + tuigreet**, **Niri**, and **no GNOME/GDM**.
 
 ---
 
-## 0. What is different in v2?
+## 0. Desktop stack
 
-Compared with the main config, v2 changes the desktop stack in a few important ways:
+This repository uses the following desktop stack:
 
 - login manager: `greetd` + `tuigreet`
 - session: `niri`
@@ -208,26 +208,22 @@ nix-shell -p git
 
 ---
 
-## 7. Put `nixos-config-v2` on the target system
+## 7. Clone the repo onto the target system
 
-This folder is intentionally standalone, so you can copy it locally instead of cloning a repo.
-
-If the folder already exists on the machine:
+Clone the repo directly into the target filesystem:
 
 ```bash
 mkdir -p /mnt/home/rms
-cp -a /home/rms/nixos-config-v2 /mnt/home/rms/
+git clone https://github.com/shourovrm/nixos-niri-config /mnt/home/rms/nixos-config
 ```
-
-If you are bringing it from another location or external drive, copy it into `/mnt/home/rms/nixos-config-v2`.
 
 ---
 
-## 8. Copy the hardware config into v2
+## 8. Copy the hardware config into the repo
 
 ```bash
 cp /mnt/etc/nixos/hardware-configuration.nix \
-   /mnt/home/rms/nixos-config-v2/hosts/rms-laptop/hardware-configuration.nix
+   /mnt/home/rms/nixos-config/hosts/rms-laptop/hardware-configuration.nix
 ```
 
 If this is a new host, duplicate the host directory and add the new host to `flake.nix`.
@@ -266,29 +262,13 @@ is active via `swapon`.
 
 ---
 
-## 10. Install v2
+## 10. Install
 
 ```bash
-nixos-install --flake /mnt/home/rms/nixos-config-v2#rms-laptop --root /mnt
+nixos-install --flake /mnt/home/rms/nixos-config#rms-laptop --root /mnt
 ```
 
 Set the root password when prompted.
-
-Then set the user password, update the flake, and rebuild once from inside the
-target system before rebooting:
-
-```bash
-nixos-enter --root /mnt
-passwd rms
-
-cd /home/rms/nixos-config-v2
-export NIX_CONFIG="experimental-features = nix-command flakes"
-nix flake update
-nixos-rebuild switch --flake .#rms-laptop
-exit
-```
-
-Only continue to reboot if that rebuild succeeds.
 
 ---
 
@@ -303,7 +283,28 @@ Remove the USB drive.
 
 ---
 
-## 12. First login in v2
+## 12. Before first graphical login
+
+Before logging into Niri for the first time, switch to a TTY and finish the
+machine-local setup there.
+
+Log in on a text console as `root`, then run:
+
+```bash
+passwd rms
+chown -R rms:users /home/rms/nixos-config
+chmod -R u+rw /home/rms/nixos-config
+su - rms
+export NIX_CONFIG="experimental-features = nix-command flakes"
+cd ~/nixos-config
+sudo nixos-rebuild switch --flake .#rms-laptop
+```
+
+Only continue to the graphical login after that rebuild succeeds.
+
+---
+
+## 13. First login
 
 You will land in **tuigreet**, not GDM.
 
@@ -311,10 +312,7 @@ Available sessions:
 
 - `niri`
 
-Choose the session and log in as `rms`.
-
-If the rebuild inside `nixos-enter` succeeded, no extra command is required on
-first login.
+At tuigreet, use `niri` as the session command and log in as `rms`.
 
 For later config changes, use:
 
@@ -324,7 +322,7 @@ nixswitch
 
 ---
 
-## 13. Post-install checks for v2
+## 14. Post-install checks
 
 ### Sessions
 
@@ -334,7 +332,7 @@ At tuigreet, verify the Niri session appears:
 
 ### Wallpaper
 
-Noctalia manages the wallpaper in v2.
+Noctalia manages the wallpaper in this setup.
 The seeded default is:
 
 ```text
@@ -347,7 +345,7 @@ The seeded default is:
 
 ### Launcher
 
-`Super+D` opens Raffi with Fuzzel as the launcher UI.
+`Super+D` opens Raffi through Fuzzel.
 
 `Super+Shift+D` still opens Noctalia's own launcher.
 
@@ -382,7 +380,7 @@ If you pick a different remote name, update `~/.config/raffi/raffi.yaml`.
 
 ---
 
-## 14. Python environment
+## 15. Python environment
 
 ```bash
 uv venv ~/.venv/general
@@ -392,10 +390,10 @@ It auto-activates in new shells.
 
 ---
 
-## 15. Rebuild commands
+## 16. Rebuild commands
 
 ```bash
-cd ~/nixos-config-v2
+cd ~/nixos-config
 
 sudo nixos-rebuild switch --flake .#rms-laptop
 nix flake check --no-build
@@ -426,12 +424,12 @@ Check:
 - `~/.config/noctalia/settings.json`
 - `~/.cache/noctalia/wallpapers.json`
 
-Noctalia should be the only wallpaper layer in v2.
+Noctalia should be the only wallpaper layer.
 
 ### No suspend behavior on AC
 
-This is intentional. v2 only auto-suspends after 3 h idle on battery.
+This is intentional. The system only auto-suspends after 3 h idle on battery.
 
 ### Displays should turn off after idle
 
-v2 uses `wlopm`, so Niri can power displays off after 10 minutes idle without compositor-specific IPC.
+This setup uses `wlopm`, so Niri can power displays off after 10 minutes idle without compositor-specific IPC.

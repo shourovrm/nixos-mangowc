@@ -22,7 +22,7 @@ Full-featured Neovim setup managed in this Nix repo. Config lives in `home/rms/n
 ### 1 — Apply the NixOS config
 
 ```bash
-sudo nixos-rebuild switch --flake ~/nixos-config-v2#rms-laptop
+sudo nixos-rebuild switch --flake ~/nixos-config#rms-laptop
 ```
 
 ### 2 — First launch — let lazy.nvim install plugins
