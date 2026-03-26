@@ -82,10 +82,12 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 
 | Concern | Detail |
 | --- | --- |
-| Default launcher | Raffi via `raffi -u fuzzel -p` (`Super+D`) |
+| Default launcher | Fuzzel app launcher — `Super+D` |
+| Raffi launcher | Raffi 0.20.0 native UI — `Super+Ctrl+D` (floating centered window) |
 | Alt launcher | Noctalia launcher (`Super+Shift+D`) |
-| Raffi config | `~/.config/raffi/raffi.yaml` |
-| Fuzzel config | `~/.config/fuzzel/fuzzel.ini` |
+| Raffi config | `~/.config/raffi/raffi.yaml` (v1 schema — `version: 1` + `launchers:`) |
+| Raffi package | Custom derivation `pkgs/raffi/` (0.20.0 from source; nixpkgs only has 0.12.0) |
+| Fuzzel config | `~/.config/fuzzel/fuzzel.ini` (used for default app launcher `Super+D` and clipboard picker `Super+V`) |
 
 ### Cloud sync
 
@@ -105,7 +107,8 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 
 | Key | Action |
 | --- | --- |
-| `Super+D` | Open Raffi launcher via Fuzzel |
+| `Super+D` | Open Fuzzel app launcher |
+| `Super+Ctrl+D` | Open Raffi tools launcher (native floating UI) |
 | `Super+Shift+D` | Toggle Noctalia launcher |
 | `Super+Space` | Switch keyboard layout (next) |
 | `Super+T` | Open foot terminal |
@@ -127,7 +130,7 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 | 5 min idle | `swaylock` dark screen (`-c 1a1a2e`) |
 | 10 min idle | Monitors off (`wlopm --off '*'`) |
 | Before sleep | `swaylock` (lid close, etc.) |
-| 3 h idle on battery | Suspend |
+| 2.5 h idle on battery | Suspend |
 | On AC power | Never auto-suspends |
 
 ### Notification timeout (mako)
@@ -145,6 +148,13 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 ## Changelog
 
 ### 2026-03-26
+
+- **Launcher split clarified:** restored `Super+D` to plain Fuzzel so all installed desktop apps are searchable again; moved Raffi native UI to `Super+Ctrl+D` because Raffi only shows configured launcher entries and addons, not the full `.desktop` app index
+- **Raffi 0.20.0 from source:** built custom derivation in `pkgs/raffi/` (nixpkgs-unstable only has 0.12.0); added `makeWrapper` with `LD_LIBRARY_PATH` for `libwayland-client` so the iced native UI works under Niri
+- **Raffi v1 schema:** migrated `raffi.yaml` to the new `version: 1` + `launchers:` wrapper format required by 0.20.0; set `ui_type: native` in `general:`, window size 640×480
+- **Raffi floating window:** added niri `window-rule { match app-id="raffi"; open-floating true; }` so raffi opens as a centered overlay instead of a tiled column
+- **Sleep timeout:** reduced battery suspend from 3 h to 2.5 h (9000 s); AC never suspends behavior unchanged
+- **Launcher guide:** added `guides/raffi.md` covering all shortcuts, calculator, currency converter, clipboard picker, and how to add new launcher entries
 
 - **Repo/docs rename:** updated docs to use `~/nixos-config` instead of `~/nixos-config-v2`, and switched clone instructions to `https://github.com/shourovrm/nixos-niri-config`
 - **VS Code settings:** stopped managing `~/.config/Code/User/settings.json` as a read-only Nix-store symlink; the file is now seeded once with the LaTeX settings and remains writable from the VS Code UI

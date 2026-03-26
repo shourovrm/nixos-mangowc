@@ -13,6 +13,8 @@
     ./home-modules/neovim.nix
     ./home-modules/newsboat.nix  # Newsboat RSS reader
     ./home-modules/niri.nix
+    ./home-modules/fuzzel.nix   # fuzzel app launcher (dmenu mode + standalone)
+    ./home-modules/raffi.nix    # raffi YAML launcher (native UI with addons)
     ./home-modules/noctalia.nix
     ./home-modules/gtk.nix           # GTK theming + dconf (no GNOME session)
     ./home-modules/clipboard.nix     # cliphist persistent clipboard history

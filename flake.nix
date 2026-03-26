@@ -54,6 +54,7 @@
         newsboat-utils  = pkgs.callPackage ./pkgs/newsboat-utils  {};
         nvim-open       = pkgs.callPackage ./pkgs/nvim-open       {};
         weather-utils   = pkgs.callPackage ./pkgs/weather-utils   {};
+        raffi           = pkgs.callPackage ./pkgs/raffi           {};
       };
 
       # One attribute per machine. The key (rms-laptop) must match:
