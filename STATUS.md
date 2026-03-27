@@ -35,7 +35,7 @@
 
 ### User packages (Home Manager — `packages.nix`)
 
-`opencode` `firefox` `btop` `rustc` `cargo` `rustfmt` `clippy` `rust-analyzer` `ripgrep` `fd` `bat` `eza` `pfetch` `liquidprompt` `mpv` `gparted` `libreoffice` `evince` `nodejs` `uv` `miktex` `perl` `distrobox` `podman` `newsboat` `yt-dlp` `links2` `taskspooler` `urlscan`
+`opencode` `firefox` `btop` `rustc` `cargo` `rustfmt` `clippy` `rust-analyzer` `gcc` `pkg-config` `ripgrep` `fd` `bat` `eza` `pfetch` `liquidprompt` `mpv` `gparted` `libreoffice` `evince` `nodejs` `uv` `miktex` `perl` `distrobox` `podman` `newsboat` `yt-dlp` `links2` `taskspooler` `urlscan`
 
 ### File management / cloud packages (Home Manager — `filemanager.nix`)
 
@@ -149,6 +149,7 @@ Wayland + gnome-libsecret flags; extensions: **LaTeX Workshop** (`james-yu.latex
 
 ### 2026-03-26
 
+- **Rust tools restored globally:** reverted the repo-local dev shell approach and installed `rustc`, `cargo`, `rustfmt`, `clippy`, `rust-analyzer`, `gcc`, and `pkg-config` back into Home Manager `packages.nix` so they are available in normal shells without `nix develop` or `.envrc`
 - **Launcher split clarified:** restored `Super+D` to plain Fuzzel so all installed desktop apps are searchable again; moved Raffi native UI to `Super+Ctrl+D` because Raffi only shows configured launcher entries and addons, not the full `.desktop` app index
 - **Raffi 0.20.0 from source:** built custom derivation in `pkgs/raffi/` (nixpkgs-unstable only has 0.12.0); added `makeWrapper` with `LD_LIBRARY_PATH` for `libwayland-client` so the iced native UI works under Niri
 - **Raffi v1 schema:** migrated `raffi.yaml` to the new `version: 1` + `launchers:` wrapper format required by 0.20.0; set `ui_type: native` in `general:`, window size 640×480

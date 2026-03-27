@@ -14,6 +14,8 @@
     rustfmt      # Rust formatter
     clippy       # Rust linter
     rust-analyzer # Rust language server
+    gcc          # provides the cc linker for many Rust crates
+    pkg-config   # native library discovery for crate build scripts
     ripgrep      # fast recursive grep (rg)
     fd           # fast alternative to find
     bat          # cat with syntax highlighting and paging
@@ -40,5 +42,13 @@
     links2       # text-mode web browser for reading articles in terminal
     taskspooler  # tsp: serialise background jobs (used by qndl for downloads)
     urlscan      # TUI URL selector for newsboat external-url-viewer
+
+    # ---- Fonts -----
+    ### Bangla fonts 
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    font-awesome
+    noto-fonts
+
   ];
 }
